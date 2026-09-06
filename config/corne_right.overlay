@@ -1,0 +1,71 @@
+/*
+ * Azoteq TPS43 trackpad, wired to the right half.
+ *
+ * This half no longer drives a nice!view (see build.yaml - corne_right
+ * is built without nice_view_adapter/nice_view), which frees up the
+ * PCB's 4-pin "OLED" header (GND / VCC / SDA / SCL). It's wired to the
+ * nice_nano_v2's i2c0 bus, which the board already pinctrl's to those
+ * exact pads by default (D2 = SDA = P0.17, D3 = SCL = P0.20) - the
+ * same pins nice_view_adapter would otherwise have repurposed for its
+ * SPI bus, so no custom pinctrl is needed here.
+ *
+ * RST/RDY use two pads that are unused by the keyboard matrix (which
+ * on the right half claims D4-D7 for rows and D14/D15/D18-D21 for
+ * columns - see corne.dtsi / corne_right.overlay upstream in the
+ * corne shield) or anything else on this half: D8 (P1.04) and D9
+ * (P1.06).
+ *
+ * Wiring:
+ *   TPS43 VDD -> 3V            TPS43 GND -> GND
+ *   TPS43 SDA -> nice_nano D2   TPS43 SCL -> nice_nano D3
+ *   TPS43 RST -> nice_nano D8   TPS43 RDY -> nice_nano D9
+ */
+
+&pro_micro_i2c {
+    status = "okay";
+    clock-frequency = <I2C_BITRATE_FAST>;
+
+    tps43_trackpad: trackpad@74 {
+        compatible = "azoteq,tps43";
+        reg = <0x74>;
+        status = "okay";
+
+        rst-gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
+        rdy-gpios = <&gpio0 31 GPIO_ACTIVE_HIGH>;
+
+        enable-power-management;
+
+        sensitivity = <100>;
+        scroll-sensitivity = <100>;
+        filter-settings = <0x0B>;
+        hold-time = <500>;
+
+        scroll;
+        zoom;
+        single-tap;
+        two-finger-tap;
+        press-and-hold;
+        swipes;
+
+        // Uncomment/adjust after test-fitting the module, depending on
+        // how it ends up mounted (rotation/mirroring vs. the
+        // datasheet origin):
+        // switch-xy;
+        // invert-x;
+        // invert-y;
+        // invert-scroll-y;
+    };
+};
+
+/ {
+    split_inputs {
+        #address-cells = <1>;
+        #size-cells = <0>;
+
+        tps43_split: tps43_split@0 {
+            compatible = "zmk,input-split";
+            reg = <0>;
+            device = <&tps43_trackpad>;
+        };
+    };
+};

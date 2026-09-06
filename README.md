@@ -24,3 +24,32 @@ Want an easy way to customize the keymap?  I have a guide [https://www.keyboardh
 How to switch bluetooth devices.
 
 ![bluetoothpair-guide](https://github.com/user-attachments/assets/d777bf4e-a7e3-4429-8638-2b11e7558153)
+
+# Trackpad (Azoteq TPS43)
+
+The right half can have an Azoteq TPS43 trackpad instead of a nice!view
+display. It's wired through the PCB's OLED header (now free since this
+half has no screen) plus two spare pads on the nice!nano itself:
+
+| TPS43 pin | nice!nano pad |
+|---|---|
+| VDD | 3V (OLED header) |
+| GND | GND (OLED header) |
+| SDA | D2 (OLED header "SDA/MOSI" pad) |
+| SCL | D3 (OLED header "SCL/SCK" pad) |
+| RST | D8 |
+| RDY | D9 |
+
+After changing `config/west.yml` you'll need to run `west update` (or let
+the GitHub Action do it) to pull in the trackpad driver module before
+building.
+
+Cursor movement, scrolling, tap-to-click, two-finger right-click,
+press-and-hold drag, pinch-to-zoom, and 4-direction swipes all work out
+of the box. If the cursor is inverted or the axes are swapped once you
+flash it, adjust the commented-out `switch-xy` / `invert-x` / `invert-y`
+/ `invert-scroll-y` properties in `config/corne_right.overlay` to match
+how the module ends up mounted. Swipe/zoom shortcuts default to
+macOS-style bindings; comment out the `TRACKPAD_MAC_MODE` define at the
+top of `config/corne_left.overlay` for Windows/Linux-style shortcuts
+instead.
