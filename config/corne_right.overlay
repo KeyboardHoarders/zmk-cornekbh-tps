@@ -18,7 +18,7 @@
  * Wiring:
  *   TPS43 VDD -> 3V            TPS43 GND -> GND
  *   TPS43 SDA -> nice_nano D2   TPS43 SCL -> nice_nano D3
- *   TPS43 RST -> nice_nano D8   TPS43 RDY -> nice_nano D9
+ *   TPS43 RST -> nice_nano D1(CS)  TPS43 RDY -> nice_nano D21
  */
 
 &pro_micro_i2c {
